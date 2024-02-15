@@ -8,6 +8,8 @@ const mongoose=require('mongoose');
 
 const User=require('./user_database')
 
+const user_ragister=require('./routers/user_ragister.routes.js') // import routers 
+
 
 async function database(){
 
@@ -26,21 +28,14 @@ const port = process.env.PORT || 3000
 app.use(bodyperser.urlencoded({extended:true}))
 
 
+
+app.use('/users',user_ragister) // import routers meddileware syntax: app.use("/target route","import router name")
+
+
 app.get('/', (req, res) => {
   
     res.sendFile("/static/index.html",{root:__dirname});
 })
-
-app.post('/login', async (req,res)=>{
-
-const user= new User({username:req.body.username,email:req.body.useremail,password:req.body.password})
-
-await user.save()
-
-res.send(`hello user`);
-
-})
-
 
 
 
