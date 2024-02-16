@@ -32,10 +32,17 @@ app.use(bodyperser.urlencoded({extended:true}))
 app.use('/users',user_ragister) // import routers meddileware syntax: app.use("/target route","import router name")
 
 
+
+
+
+
+
+
 app.get('/', (req, res) => {
   
     res.sendFile("/static/index.html",{root:__dirname});
 })
+
 
 
 

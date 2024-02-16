@@ -2,30 +2,56 @@
 
 const express = require("express")
 
-const bodyperser=require('body-parser');
+const bodyperser = require('body-parser');
 const router = express.Router() // import router mathod
 
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
 
-const User=require('../user_database')
+const User = require('../user_database')
 
 
 
-router.get('/myloginpage',(req,res)=>{
+router.post('/myloginpage', (req, res) => {
 
-    res.send("hello login");
+  res.status(200).json({md:"my post request"});
 
 })
 
-router.post('/login', async (req,res)=>{
 
-   
-    const user= new User({username:req.body.username,email:req.body.useremail,password:req.body.password})
-    
-    await user.save()
-    
-  res.send(`welcome user ${user}`)
-    
-    })
 
-module.exports=router // exports routs
+
+
+
+
+
+
+
+
+
+router.post('/login', async (req, res) => {
+
+  try {
+
+    const user = new User({ username: req.body.username, email: req.body.useremail, password: req.body.password })
+
+
+
+   const data = await user.save()
+
+
+
+    res.status(200).json({ msg: data, token: await data.generateToken()});
+
+
+
+
+  } catch (error) {
+
+    res.status(500).json("internal server error")
+
+  }
+
+
+});
+
+module.exports = router // exports routs
