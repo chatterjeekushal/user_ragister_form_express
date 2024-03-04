@@ -7,6 +7,8 @@ const router = express.Router() // import router mathod
 
 const mongoose = require('mongoose');
 
+const path = require("path")
+
 const User = require('../user_database')
 
 const multer = require("multer"); // import multer
@@ -23,27 +25,46 @@ const uplord = multer({
 
     filename: function (req, file, cb) {
 
-      console.log(file.originalname.split("."));
+      // let filetype = file.originalname.split(".")[1]
 
-      cb(null, file.fieldname + "-" + Date.now() + ".jpg")
+      let file_type = path.extname(file.originalname)
+
+      console.log(file_type);
+
+      cb(null, file.fieldname + "-" + Date.now() + file_type)
     }
 
   })
 
-}).single("user_name")
+}).single("profileimage")
+
+
+console.log(uplord);
 
 
 
 
-
-
-
-
-router.post('/login', async (req, res) => {
+router.post('/login', uplord, async (req, res) => {
 
   try {
 
-    const user = new User({ username: req.body.username, email: req.body.useremail, password: req.body.password })
+
+    // if profile pic not uplored your data not save
+
+    if (!res.file) {
+
+      return res.status(404).send("profile pic uplord")
+    }
+
+
+    let file_data = req.file.originalname; // file original path
+    console.log(file_data);
+
+
+
+
+
+    const user = new User({ username: req.body.username, email: req.body.useremail, password: req.body.password, profileimage: file_data })
 
 
     const olradyragister = await User.findOne({ email: req.body.useremail })
@@ -52,6 +73,9 @@ router.post('/login', async (req, res) => {
 
       console.log("user exsist this email");
     }
+
+
+
 
     else {
 

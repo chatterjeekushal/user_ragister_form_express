@@ -28,6 +28,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    profileimage:{
+        type:String
+    },
 
 
 
@@ -74,6 +77,7 @@ UserSchema.pre('save', async function (next) {
     }
 
 });
+
 
 
 

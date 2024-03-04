@@ -44,7 +44,7 @@ app.use('/login',user_login)
 
 app.get('/', (req, res) => {
   
-    res.sendFile("/static/index.html",{root:__dirname});
+    res.sendFile("/static/index.html",{root:__dirname}); // syntax: res.sendfile("full file path,root_diractry")
 })
 
 
