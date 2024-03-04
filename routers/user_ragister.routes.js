@@ -13,6 +13,12 @@ const User = require('../user_database')
 
 const multer = require("multer"); // import multer
 
+const uploredcloudnary=require("../utils/cloudnary.js")
+
+
+
+
+
 
 const uplord = multer({
 
@@ -39,7 +45,7 @@ const uplord = multer({
 }).single("profileimage")
 
 
-console.log(uplord);
+
 
 
 
@@ -51,16 +57,19 @@ router.post('/login', uplord, async (req, res) => {
 
     // if profile pic not uplored your data not save
 
-    if (!res.file) {
 
-      return res.status(404).send("profile pic uplord")
-    }
+
 
 
     let file_data = req.file.originalname; // file original path
     console.log(file_data);
 
 
+
+
+    const profile=await uploredcloudnary(req.file.originalname)
+
+    console.log(`my cloudnary image ${profile}`);
 
 
 

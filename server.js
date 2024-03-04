@@ -2,21 +2,23 @@
 
 const express = require('express')
 
-const bodyperser=require('body-parser');
-
-const mongoose=require('mongoose');
-
-const User=require('./user_database')
-
-const user_ragister=require('./routers/user_ragister.routes.js') // import routers 
-
-const user_login=require("./routers/user_login.routes.js") // import
+const bodyperser = require('body-parser');
 
 
-async function database(){
+
+const mongoose = require('mongoose');
+
+const User = require('./user_database')
+
+const user_ragister = require('./routers/user_ragister.routes.js') // import routers 
+
+const user_login = require("./routers/user_login.routes.js") // import
 
 
-await mongoose.connect('mongodb://127.0.0.1:27017/user');
+async function database() {
+
+
+  await mongoose.connect('mongodb://127.0.0.1:27017/user');
 
 }
 
@@ -27,13 +29,16 @@ const port = process.env.PORT || 3000
 
 
 
-app.use(bodyperser.urlencoded({extended:true}))
+app.use(bodyperser.urlencoded({ extended: true })) // if you use body parser you should use this code
 
 
 
-app.use('/users',user_ragister) // import routers meddileware syntax: app.use("/target route","import router name")
 
-app.use('/login',user_login)
+
+
+app.use('/users', user_ragister) // import routers meddileware syntax: app.use("/target route","import router name")
+
+app.use('/login', user_login)
 
 
 
@@ -43,14 +48,14 @@ app.use('/login',user_login)
 
 
 app.get('/', (req, res) => {
-  
-    res.sendFile("/static/index.html",{root:__dirname}); // syntax: res.sendfile("full file path,root_diractry")
+
+  res.sendFile("/static/index.html", { root: __dirname }); // syntax: res.sendfile("full file path,root_diractry")
 })
 
 
 app.get('/login', (req, res) => {
-  
-  res.sendFile("/static/login.html",{root:__dirname});
+
+  res.sendFile("/static/login.html", { root: __dirname });
 })
 
 

@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs"); // import bcrypt js
 
 const jwt = require("jsonwebtoken"); // import jwt web token
 
-require('dotenv').config({path:'./env'});
+require('dotenv').config({ path: './env' });
 
 
 
@@ -28,8 +28,8 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    profileimage:{
-        type:String
+    profileimage: {
+        type: String
     },
 
 
@@ -95,20 +95,20 @@ UserSchema.pre('save', async function (next) {
 
 UserSchema.methods.generateToken = async function () {
 
-try {
+    try {
 
-    return jwt.sign({
+        return jwt.sign({
 
-        _id:this._id,
-        email:this.email,
-        username:this.username,
+            _id: this._id,
+            email: this.email,
+            username: this.username,
 
-    },process.env.JWT_SECRET_KEY,{expiresIn:"2d"});
-    
-} catch (error) {
+        }, process.env.JWT_SECRET_KEY, { expiresIn: "2d" });
 
-    console.error(`jwt token error ${error}`);
-}
+    } catch (error) {
+
+        console.error(`jwt token error ${error}`);
+    }
 
 
 };
