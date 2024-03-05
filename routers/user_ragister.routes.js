@@ -20,6 +20,7 @@ const uploredcloudnary=require("../utils/cloudnary.js")
 
 
 
+
 const uplord = multer({
 
   storage: multer.diskStorage({
@@ -37,12 +38,12 @@ const uplord = multer({
 
       console.log(file_type);
 
-      cb(null, file.fieldname + "-" + Date.now() + file_type)
+      cb(null, file.fieldname + file_type)
     }
 
   })
 
-}).single("profileimage")
+}).fields([{name:"profileimage",maxCount:1},{name:"coverimage",maxCount:1}])
 
 
 
@@ -55,25 +56,29 @@ router.post('/login', uplord, async (req, res) => {
   try {
 
 
-    // if profile pic not uplored your data not save
+    
 
 
 
 
 
-    let file_data = req.file.originalname; // file original path
-    console.log(file_data);
+    let profileimage =req.files?.profileimage[0]?.path; // file original path
+    console.log(profileimage);
 
 
+    let coverimage=req.files?.coverimage[0]?.path;
+    
+console.log(coverimage);
 
+const profile=await uploredcloudnary(profileimage)
 
-    const profile=await uploredcloudnary(req.file.originalname)
+const cover=await uploredcloudnary(coverimage)
 
-    console.log(`my cloudnary image ${profile}`);
+console.log(profile.url);
 
+console.log(cover.url);
 
-
-    const user = new User({ username: req.body.username, email: req.body.useremail, password: req.body.password, profileimage: file_data })
+    const user = new User({ username: req.body.username, email: req.body.useremail, password: req.body.password, profileimage: profile.url })
 
 
     const olradyragister = await User.findOne({ email: req.body.useremail })
