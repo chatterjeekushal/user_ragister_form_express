@@ -9,7 +9,9 @@ const mongoose = require('mongoose');
 
 const User = require('../user_database');
 const bcrypt = require("bcryptjs"); // import bcrypt js 
-const e = require("express");
+
+const {loginuser}=require("../controller/user.controller")
+
 
 
 
@@ -54,57 +56,7 @@ const e = require("express");
 
 
 
-router.post("/userlogin", async (req, res) => {
-
-
-    try {
-
-
-        let { email, password } = req.body
-
-
-        let userexist = await User.findOne({ email })
-
-
-
-
-
-        if (userexist) {
-
-            console.log("user exsits");
-
-            const passcompare = await bcrypt.compare(password, userexist.password)
-
-            if (passcompare) {
-
-                console.log("password mach");
-
-                res.send("welcome user")
-            }
-            else {
-
-                console.log("password not mach");
-            }
-
-        }
-        else {
-
-            console.log("user not exsite");
-        }
-
-
-
-    } catch (error) {
-
-
-        res.send(error)
-
-
-    }
-
-
-
-})
+router.route("/userlogin").post(loginuser)
 
 
 
