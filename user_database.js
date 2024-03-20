@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema({
         type: String
     },
 
+    RefToken:{
+        type:String,
+    }
+
 
 
 }, { timestamps: true })
@@ -113,6 +117,29 @@ UserSchema.methods.generateToken = async function () {
 
 };
 
+
+
+
+
+UserSchema.methods.refrashToken = async function () {
+
+
+
+    try {
+
+        return jwt.sign({
+
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+        }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1d" })
+
+    } catch (error) {
+
+        console.log(`jwt refrash token error ${error}`);
+    }
+
+}
 
 
 

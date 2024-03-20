@@ -14,6 +14,8 @@ const user_ragister = require('./routers/user_ragister.routes.js') // import rou
 
 const user_login = require("./routers/user_login.routes.js") // import
 
+const cookie = require('cookie-parser') // import cookie parser
+
 
 async function database() {
 
@@ -31,7 +33,7 @@ const port = process.env.PORT || 3000
 
 app.use(bodyperser.urlencoded({ extended: true })) // if you use body parser you should use this code
 
-
+app.use(cookie()) // use cookie parser 
 
 
 

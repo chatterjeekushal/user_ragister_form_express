@@ -12,7 +12,9 @@ const bcrypt = require("bcryptjs"); // import bcrypt js
 
 const {loginuser}=require("../controller/user.controller")
 
+const varifyjwt =require("../middleware/auth.js")
 
+const {logoutuser}=require("../controller/user.controller.js")
 
 
 
@@ -60,7 +62,10 @@ router.route("/userlogin").post(loginuser)
 
 
 
+// sequred route
 
+
+router.route("/userlogout").post(varifyjwt,logoutuser)
 
 
 

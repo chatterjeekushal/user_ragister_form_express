@@ -15,6 +15,36 @@ const uploredcloudnary = require("../utils/cloudnary.js")
 
 
 
+const cookie = require('cookie-parser')
+
+
+
+const GanarateToken = async (userid) => {
+
+    try {
+
+
+        const userexist = await User.findById(userid)
+
+        const accessToken = await userexist.generateToken()
+
+        const refreshToken = await userexist.refrashToken()
+
+
+
+        userexist.RefToken = refreshToken
+
+        await userexist.save({ validateBeforeSave: false })
+
+        return { accessToken, refreshToken }
+
+    } catch (error) {
+
+        console.log(`token ganarate error ${error}`);
+    }
+
+}
+
 
 
 
@@ -86,7 +116,7 @@ const ragisteruser = async (req, res) => {
 
 
 
-const loginuser= async(req,res)=>{
+const loginuser = async (req, res) => {
 
     try {
 
@@ -110,16 +140,56 @@ const loginuser= async(req,res)=>{
 
                 console.log("password mach");
 
-                console.log(userexist.email,userexist.password);
+                console.log(userexist.email, userexist.password);
 
-                res.status(200).json({ msg: userexist, token: await userexist.generateToken() , id:userexist.id});
+                // // ganarate refrash token
+
+                // const reftoken= await userexist.refrashToken()
+
+                // console.log(`reftoken is ${reftoken}`);
+
+                // // update refresh token userschema refrsh token feild
+
+                // userexist.RefToken=reftoken
+
+                // // save refrash token in database
+
+                // await userexist.save({validateBeforeSave:false})
+
+
+
+                const { accessToken, refreshToken } = await GanarateToken(userexist._id)
+
+
+
+                //send cookies 
+
+                const options = {
+
+                    httpOnly: true,
+                    secure: true,
+                }
+
+
+                return res
+                    .status(200).cookie("accessToken", accessToken, options)
+                    .cookie("refreshToken", refreshToken, options)
+                    .json({ msg: userexist, accessToken: accessToken, id: userexist.id, refreshToken: refreshToken })
+
+
+                // res.status(200).json({ msg: userexist, accessToken: accessToken, id: userexist.id, refreshToken: refreshToken });
 
 
             }
+
+
             else {
 
                 console.log("password not mach");
             }
+
+
+
 
         }
 
@@ -143,4 +213,51 @@ const loginuser= async(req,res)=>{
 
 
 
-module.exports={ragisteruser , loginuser}
+
+
+
+
+// logout user
+
+
+
+const logoutuser = async (req, res) => {
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = { ragisteruser, loginuser,logoutuser }
