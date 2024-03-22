@@ -1,18 +1,24 @@
 
 
 
-const cookie = require('cookie-parser') // import cookie parser
+
 
 const jwt = require("jsonwebtoken"); // import jwt web token
 
 const User = require("../user_database.js");
-const { model } = require('mongoose');
+
+
+
+
+
+
 
 const varifyjwt = async (req, res, next) => {
 
     try {
-        const token = req.cookie?.accessToken || req.header("Authorization")?.replace("Bearer", "")
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer", "")
 
+        console.log(`this is token request cookie token ${token}`);
 
         if (!token) {
 
@@ -21,9 +27,11 @@ const varifyjwt = async (req, res, next) => {
 
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY)
 
-        console.log(decodedToken);
+        // console.log(`this is decoded token ${decodedToken}`);
 
         const decodeduser = await User.findById(decodedToken?._id)
+
+        console.log(`this is decoded user ${decodeduser}`);
 
         if (!decodeduser) {
 
@@ -43,4 +51,4 @@ const varifyjwt = async (req, res, next) => {
 
 }
 
-module.exports=varifyjwt;
+module.exports = varifyjwt;

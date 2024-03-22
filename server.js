@@ -14,6 +14,8 @@ const user_ragister = require('./routers/user_ragister.routes.js') // import rou
 
 const user_login = require("./routers/user_login.routes.js") // import
 
+const user_logout=require("./routers/user_logout.routes.js")
+
 const cookie = require('cookie-parser') // import cookie parser
 
 
@@ -42,6 +44,8 @@ app.use('/users', user_ragister) // import routers meddileware syntax: app.use("
 
 app.use('/login', user_login)
 
+app.use('/userlogout',user_logout)
+
 
 
 
@@ -58,6 +62,13 @@ app.get('/', (req, res) => {
 app.get('/login', (req, res) => {
 
   res.sendFile("/static/login.html", { root: __dirname });
+})
+
+
+app.get("/logout",(req,res)=>{
+
+  res.sendFile("/static/logout.html",{root:__dirname})
+
 })
 
 

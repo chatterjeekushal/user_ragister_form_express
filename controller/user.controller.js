@@ -14,8 +14,7 @@ const User = require('../user_database.js')
 const uploredcloudnary = require("../utils/cloudnary.js")
 
 
-
-const cookie = require('cookie-parser')
+const jwt = require("jsonwebtoken");
 
 
 
@@ -220,13 +219,90 @@ const loginuser = async (req, res) => {
 // logout user
 
 
-
 const logoutuser = async (req, res) => {
+    try {
+        // Update the user document to remove the refresh token
+        await User.findByIdAndUpdate(req.decodeduser._id, { $set: { refreshToken: undefined } }, { new: true });
+
+        // Set options for cookie clearing
+        const options = {
+            httpOnly: true,
+            secure: true, // Consider setting this based on your deployment environment
+        };
+
+        // Clear both access and refresh tokens from cookies
+        return res
+            .status(200)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json({ msg: "User logged out" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
 
 
 
 
+
+
+
+
+
+const refrashAccessToken = async (req, res) => {
+
+
+
+    try {
+        const incomingRefrahToken = req.cookies.refrashToken || req.body.refrashToken
+
+
+        if (!incomingRefrahToken) {
+
+            throw new Error("invalid refrash token")
+        }
+
+        console.log(`my incoming ref token ${incomingRefrahToken}`);
+
+        const decoded_ref_token = jwt.verify(incomingRefrahToken, process.env.REFRESH_TOKEN_SECRET)
+
+
+        const decoded_ref_token_user = await User.findById(decoded_ref_token?._id)
+
+
+        if (!decoded_ref_token_user) {
+
+            throw new Error("invalid user ref token")
+        }
+
+
+        if (incomingRefrahToken !== decoded_ref_token_user) {
+
+            throw new Error("ref token is expred or used")
+        }
+
+        const options = {
+
+            httpOnly: true,
+            secure: true,
+        }
+
+        const { new_grnarate_acces_token, new_grnarate_ref_token } = await GanarateToken(decoded_ref_token_user._id)
+
+        return res
+            .status(200)
+            .cookie("new_grnarate_acces_token", new_grnarate_acces_token, options)
+            .cookie("new_grnarate_ref_token", new_grnarate_ref_token, options)
+            .json({ msg: "new acces token and new refrash token ganarate", new_grnarate_acces_token: new_grnarate_acces_token, new_grnarate_ref_token: new_grnarate_ref_token })
+
+
+    } catch (error) {
+
+        throw new Error("new refrash token ganarate poblem")
+
+    }
 }
 
 
@@ -251,13 +327,4 @@ const logoutuser = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-module.exports = { ragisteruser, loginuser,logoutuser }
+module.exports = { ragisteruser, loginuser, logoutuser,refrashAccessToken }

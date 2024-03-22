@@ -2,19 +2,11 @@
 
 const express = require("express")
 
-const bodyperser = require('body-parser');
 const router = express.Router() // import router mathod
 
-const mongoose = require('mongoose');
+const {loginuser}=require("../controller/user.controller.js")
 
-const User = require('../user_database');
-const bcrypt = require("bcryptjs"); // import bcrypt js 
-
-const {loginuser}=require("../controller/user.controller")
-
-const varifyjwt =require("../middleware/auth.js")
-
-const {logoutuser}=require("../controller/user.controller.js")
+const {refrashAccessToken}=require("../controller/user.controller.js")
 
 
 
@@ -61,11 +53,14 @@ const {logoutuser}=require("../controller/user.controller.js")
 router.route("/userlogin").post(loginuser)
 
 
+router.route("/newuserlogin").post(refrashAccessToken)
+
+
 
 // sequred route
 
 
-router.route("/userlogout").post(varifyjwt,logoutuser)
+
 
 
 
