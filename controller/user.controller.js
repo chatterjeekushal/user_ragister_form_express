@@ -2,7 +2,7 @@
 
 const express = require("express")
 
-const body_parser = require("body-parser")
+const body = require("body-parser")
 
 
 const bcrypt = require("bcryptjs"); // import bcrypt js 
@@ -312,6 +312,42 @@ const refrashAccessToken = async (req, res) => {
 
 
 
+const changeCurrentPassword = async (req, res) => {
+
+
+    const { oldPassword, newPassword } = req.body
+
+    const login_user = await User.findById(req.decodeduser?._id)
+
+
+    const login_user_password = await bcrypt.compare(oldPassword, login_user.password)
+
+    if (!login_user_password) {
+
+        throw Error("invalid old password")
+    }
+
+    User.password = newPassword;
+
+    await User.save({ validateBeforeSave: false })
+
+    return res
+    .status(200)
+    .json({msg:"your new password save"})
+
+}
+
+
+
+
+const getcurrent_user=async(req,res)=>{
+
+
+    return res
+    .status(200)
+    .json({current_user:req.decodeduser,msg:"current user fetched successfully"})
+
+}
 
 
 
@@ -327,4 +363,5 @@ const refrashAccessToken = async (req, res) => {
 
 
 
-module.exports = { ragisteruser, loginuser, logoutuser,refrashAccessToken }
+module.exports = { ragisteruser, loginuser, logoutuser, refrashAccessToken, changeCurrentPassword,getcurrent_user }
+
