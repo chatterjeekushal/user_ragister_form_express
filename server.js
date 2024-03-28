@@ -37,7 +37,7 @@ app.use(bodyperser.urlencoded({ extended: true })) // if you use body parser you
 
 app.use(cookie()) // use cookie parser 
 
-
+app.set("view engine","ejs") // set ejs
 
 
 app.use('/users', user_ragister) // import routers meddileware syntax: app.use("/target route","import router name")
@@ -71,6 +71,13 @@ app.get("/logout",(req,res)=>{
 
 })
 
+
+
+app.get("/data",(req,res)=>{
+
+  res.sendFile("/static/ragister.html",{root:__dirname})
+
+})
 
 
 

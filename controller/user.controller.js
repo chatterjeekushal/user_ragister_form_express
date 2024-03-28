@@ -88,7 +88,11 @@ const ragisteruser = async (req, res) => {
 
             const data = await user.save()
 
-            res.status(200).json({ msg: data, token: await data.generateToken(), id: data._id });
+            res
+                .status(200)
+                .json({ msg: data, token: await data.generateToken(), id: data._id })
+
+
 
         }
 
@@ -332,20 +336,157 @@ const changeCurrentPassword = async (req, res) => {
     await User.save({ validateBeforeSave: false })
 
     return res
-    .status(200)
-    .json({msg:"your new password save"})
+        .status(200)
+        .json({ msg: "your new password save" })
 
 }
 
 
 
 
-const getcurrent_user=async(req,res)=>{
+const getcurrent_user = async (req, res) => {
 
+    console.log(`cookie is ${req.decodeduser}`);
+
+    return res
+        .status(200)
+        .json({ current_user: req.decodeduser, msg: "current user fetched successfully" })
+
+}
+
+
+const new_profile_image = async (req, res) => {
+    try {
+        const new_profile_image = req.file?.path; // Accessing the path of the uploaded file
+
+        if (!new_profile_image) {
+            throw new Error("Uploaded file path is undefined");
+        }
+
+
+
+
+        const change_profile_image = await uploredcloudnary(new_profile_image)
+
+        if (!change_profile_image.url) {
+
+            throw new Error("image url not found")
+        }
+
+        console.log(change_profile_image);
+
+        await User.findByIdAndUpdate(req.decodeduser?._id, { $set: { profileimage: change_profile_image.url } }, { new: true })
+
+        return res
+            .status(200)
+            .json({ msg: "profile image update", })
+
+
+    } catch (error) {
+        console.error("Error processing file upload:");
+        res.status(400).json({ msg: "new profile image update poblem" });
+    }
+}
+
+
+
+
+
+
+
+
+
+
+const getuserchanelprofile = async (req, res) => {
+
+    const { username } = req.params
+
+    if (!username?.trim()) {
+
+        throw new Error("username is messing")
+    }
+
+
+    const chanel = await User.aggregate([
+
+        {
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+
+        {
+            $lookup: {
+
+                from: "subsciptions",
+                localField: "_id",
+
+                foreignField: "channel",
+                as: "subscribers"
+            }
+        },
+
+
+        {
+
+            $lookup: {
+
+                from: "subsciptions",
+                localField: "_id",
+
+                foreignField: "subscriber",
+                as: "subscribedTo"
+
+            }
+        },
+
+        {
+
+            $addFields:{
+
+                subscribersCount:{
+                    $size:"$subscribers"
+                },
+
+                channelsubscribedTocount:{
+                    $size:"$subscribedTo"
+                },
+                issubscribed:{
+
+                    $cond:{
+                        if:{$in:[req.decodeduser?._id,"$subscribers.subscriber"]},
+                        then:true,
+                        else:false
+                    }
+                }
+            }
+        },
+
+        {
+            $project:{
+
+                username:1,
+                subscribersCount:1,
+                channelsubscribedTocount:1,
+                profileimage:1
+
+            }
+        }
+
+
+
+    ])
+
+    console.log(chanel);
+
+    if(!chanel?.length){
+
+        throw new Error("channel dose not exjist")
+    }
 
     return res
     .status(200)
-    .json({current_user:req.decodeduser,msg:"current user fetched successfully"})
+    .json({msg:"user chanel fashed susseysfully", data:chanel[0]})
 
 }
 
@@ -363,5 +504,17 @@ const getcurrent_user=async(req,res)=>{
 
 
 
-module.exports = { ragisteruser, loginuser, logoutuser, refrashAccessToken, changeCurrentPassword,getcurrent_user }
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = { ragisteruser, loginuser, logoutuser, refrashAccessToken, changeCurrentPassword, getcurrent_user, new_profile_image, getuserchanelprofile }
 
